@@ -5,7 +5,7 @@
 
 StockDataParser::StockDataParser(std::istream &istream) {
     if (loadPointersToTrades(istream)) {
-        // Continue
+        // Continue: create candles
     } else {
         throw std::invalid_argument(error);
     }

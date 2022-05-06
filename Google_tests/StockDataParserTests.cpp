@@ -1,19 +1,19 @@
-#include <fstream>
 #include "gtest/gtest.h"
 #include "istream"
+#include <fstream>
 #include "../strategy_simulator_lib/include/StockDataParser.h"
 
 class StockDataParserFixture : public ::testing::Test {
 protected:
-    virtual void SetUp() {
+    void SetUp() override {
 
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
 
     }
 
-    tm getTm(const char *timeAsString) {
+    static tm getTm(const char *timeAsString) {
         const char *time_details = timeAsString;
         struct tm tm{};
         strptime(time_details, "%Y-%m-%dT%H:%M:%S", &tm);
@@ -27,7 +27,7 @@ TEST_F(StockDataParserFixture, IStreamContainingWordThrowsException) {
     ASSERT_THROW(auto stockData = StockDataParser(*input), std::invalid_argument);
 }
 
-TEST_F(StockDataParserFixture, IStreamContainingEmptyKeyThrowsException) {
+TEST_F(StockDataParserFixture, EmptyKeyThrowsException) {
     auto input = new std::istringstream{R"({"": "value"})"};
 
     EXPECT_THROW({
@@ -40,7 +40,7 @@ TEST_F(StockDataParserFixture, IStreamContainingEmptyKeyThrowsException) {
                  }, std::invalid_argument);
 }
 
-TEST_F(StockDataParserFixture, IStreamContainingClosingBracketBeforeOpeningBracketThrowsException) {
+TEST_F(StockDataParserFixture, ClosingBracketBeforeOpeningBracketThrowsException) {
     auto input = new std::istringstream{R"({"key": ]})"};
 
     EXPECT_THROW({
@@ -53,7 +53,7 @@ TEST_F(StockDataParserFixture, IStreamContainingClosingBracketBeforeOpeningBrack
                  }, std::invalid_argument);
 }
 
-TEST_F(StockDataParserFixture, IStreamContainingNoDataThrowsException) {
+TEST_F(StockDataParserFixture, NoDataThrowsException) {
     auto input = new std::istringstream{R"({})"};
 
     EXPECT_THROW({
@@ -66,7 +66,7 @@ TEST_F(StockDataParserFixture, IStreamContainingNoDataThrowsException) {
                  }, std::invalid_argument);
 }
 
-TEST_F(StockDataParserFixture, IStreamNotContainingTradesKeyThrowsException) {
+TEST_F(StockDataParserFixture, NoTradesKeyThrowsException) {
     auto input = new std::istringstream{R"({"key": "value"})"};
 
     ASSERT_THROW(auto stockData = StockDataParser(*input), std::invalid_argument);
@@ -89,7 +89,6 @@ TEST_F(StockDataParserFixture, IFStreamWithExampleDataConstructsObject) {
     auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/example.json",
                                    std::ios_base::in};
 
-
     try {
         auto stockData = StockDataParser(*input);
 
@@ -105,21 +104,20 @@ TEST_F(StockDataParserFixture, IFStreamWithExampleDataConstructsObject) {
             ASSERT_EQ(mktime(&stockData.trades[i].time), mktime(&expectedTrades[i].time));
             ASSERT_EQ(stockData.trades[i].price, expectedTrades[i].price);
         }
-    }
-    catch (std::exception const &err) {
+    } catch (std::exception const &err) {
         FAIL() << err.what();
     }
 }
 
-TEST_F(StockDataParserFixture, IStreamWithWhiteSpaceCharactersConstructsObject) {
-    auto input = new std::istringstream{"{\"trades\":\r[{\"time\":\"2012-10-31T08:00:00.000+0100\",\n\t\"price\":1278}]})"};
+TEST_F(StockDataParserFixture, WhiteSpaceCharactersConstructsObject) {
+    auto input = new std::istringstream{
+            "{\"trades\":\r[{\"time\":\"2012-10-31T08:00:00.000+0100\",\n\t\"price\":1278}]})"
+    };
 
     try {
         auto stockData = StockDataParser(*input);
-
         ASSERT_EQ(stockData.trades.size(), 1);
-    }
-    catch (std::exception const &err) {
+    } catch (std::exception const &err) {
         FAIL() << err.what();
     }
 }
