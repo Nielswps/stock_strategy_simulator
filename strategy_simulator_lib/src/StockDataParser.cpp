@@ -30,6 +30,11 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
             case '"':
                 if (!isParsingString) {
                     isParsingString = true;
+
+                    if (!key.empty()) {
+                        isParsingValue = true;
+                    }
+
                     break;
                 }
 
@@ -59,8 +64,8 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
                 break;
 
             case ',':
-                if (!isParsingValue) {
-                    error.append("Unexpected ',' encountered");
+                if (!(isParsingValue || parsedObjectStack.top() == list)) {
+                    error.append("',' encountered unexpectedly");
                     return false;
                 }
 
@@ -72,7 +77,7 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
 
             case '[':
                 if (parsedObjectStack.top() == list && key.empty()) {
-                    error.append("Encountered list within list without a key");
+                    error.append("List encountered within list without a key");
                     return false;
                 };
 
@@ -102,11 +107,22 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
                 }
                 parsedObjectStack.pop();
 
-                if (currentObject.contains("time")) {
+                if (!loadedChars.empty()) {
+                    currentObject[key] = loadedChars;
+                    loadedChars.clear();
+                }
+
+                if (currentObject.contains("time") && currentObject.contains("price")) {
                     const char *time_details = currentObject["time"].c_str();
                     struct tm tm{};
                     strptime(time_details, "%Y-%m-%dT%H:%M:%S", &tm);
-                    this->trades.push_back(trade{tm, 200.});
+                    try {
+                        this->trades.push_back(trade{tm, std::stof(currentObject["price"])});
+                    } catch (std::exception& e) {
+                        error.append(e.what());
+                        return false;
+                    }
+                    currentObject.clear();
                 }
 
                 isParsingValue = false;
@@ -115,6 +131,9 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
             }
 
             case ' ':
+            case '\n':
+            case '\r':
+            case '\t':
                 break;
 
             default:

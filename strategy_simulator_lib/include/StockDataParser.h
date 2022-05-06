@@ -19,8 +19,8 @@ public:
         std::tm time;
         float price;
     };
-private:
     std::vector<trade> trades{};
+private:
     std::string error;
     enum parsable {object, list};
 

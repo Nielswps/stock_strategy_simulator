@@ -4,7 +4,6 @@
 #include "../strategy_simulator_lib/include/StockDataParser.h"
 
 class StockDataParserFixture : public ::testing::Test {
-
 protected:
     virtual void SetUp() {
 
@@ -12,6 +11,13 @@ protected:
 
     virtual void TearDown() {
 
+    }
+
+    tm getTm(const char *timeAsString) {
+        const char *time_details = timeAsString;
+        struct tm tm{};
+        strptime(time_details, "%Y-%m-%dT%H:%M:%S", &tm);
+        return tm;
     }
 };
 
@@ -67,15 +73,53 @@ TEST_F(StockDataParserFixture, IStreamNotContainingTradesKeyThrowsException) {
 }
 
 TEST_F(StockDataParserFixture, IStreamWithExampleDataConstructsObject) {
-    auto input = new std::istringstream{R"({"trades": [ { "time":"2012-10-31T08:00:00.000+0100", "price":1278 } ]})"};
+    auto input = new std::istringstream{R"({"trades": [{"time":"2012-10-31T08:00:00.000+0100","price":1278}]})"};
 
     try {
         auto stockData = StockDataParser(*input);
 
-        ASSERT_EQ(stockData.trades.size(), 2);
-
+        ASSERT_EQ(stockData.trades.size(), 1);
     }
-    catch (std::exception const & err) {
+    catch (std::exception const &err) {
+        FAIL() << err.what();
+    }
+}
+
+TEST_F(StockDataParserFixture, IFStreamWithExampleDataConstructsObject) {
+    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/example.json",
+                                   std::ios_base::in};
+
+
+    try {
+        auto stockData = StockDataParser(*input);
+
+        ASSERT_EQ(stockData.trades.size(), 3);
+
+        std::vector<StockDataParser::trade> expectedTrades{
+                StockDataParser::trade{getTm("2012-10-31T08:00:00.000+0100"), 1278},
+                StockDataParser::trade{getTm("2012-10-31T08:00:00.000+0100"), 1278},
+                StockDataParser::trade{getTm("2012-10-31T08:00:00.000+0100"), 1269},
+        };
+
+        for (int i = 0; i < stockData.trades.size(); i++) {
+            ASSERT_EQ(mktime(&stockData.trades[i].time), mktime(&expectedTrades[i].time));
+            ASSERT_EQ(stockData.trades[i].price, expectedTrades[i].price);
+        }
+    }
+    catch (std::exception const &err) {
+        FAIL() << err.what();
+    }
+}
+
+TEST_F(StockDataParserFixture, IStreamWithWhiteSpaceCharactersConstructsObject) {
+    auto input = new std::istringstream{"{\"trades\":\r[{\"time\":\"2012-10-31T08:00:00.000+0100\",\n\t\"price\":1278}]})"};
+
+    try {
+        auto stockData = StockDataParser(*input);
+
+        ASSERT_EQ(stockData.trades.size(), 1);
+    }
+    catch (std::exception const &err) {
         FAIL() << err.what();
     }
 }
