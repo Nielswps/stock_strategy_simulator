@@ -1,0 +1,6 @@
+#ifndef STRATEGY_SIMULATOR_LIB_H
+#define STRATEGY_SIMULATOR_LIB_H
+
+void hello();
+
+#endif //STRATEGY_SIMULATOR_LIB_H

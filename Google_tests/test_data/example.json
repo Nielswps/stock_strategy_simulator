@@ -1,0 +1,39 @@
+{
+    "tag":"COLO B",
+    "isin":"DK0060448595",
+    "shares":198000000,
+    "name":"Coloplast Group",
+    "url":"https://www.coloplast.com/",
+    "market":"Nasdaq Copenhagen",
+    "sector":"Health Care",
+    "segment":"Large",
+    "trades":[
+        {
+            "time":"2012-10-31T08:00:00.000+0100",
+            "price":1278,
+            "amount":2,
+            "buyer":"NDA",
+            "seller":"NDA",
+            "seq":1,
+            "code":0
+        },
+        {
+            "time":"2012-10-31T08:00:00.000+0100",
+            "price":1278,
+            "amount":12,
+            "buyer":"NDA",
+            "seller":"NDA",
+            "seq":2,
+            "code":0
+        },
+        {
+            "time":"2012-10-31T08:00:00.000+0100",
+            "price":1269,
+            "amount":39,
+            "buyer":"SYD",
+            "seller":"SYD",
+            "seq":3,
+            "code":0
+        }
+    ]
+}
