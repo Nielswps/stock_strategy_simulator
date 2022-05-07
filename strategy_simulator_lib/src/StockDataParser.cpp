@@ -2,10 +2,41 @@
 #include <map>
 #include <stack>
 #include "../include/StockDataParser.h"
+#include "../include/HistoricData.h"
 
-StockDataParser::StockDataParser(std::istream &istream) {
+StockDataParser::StockDataParser(std::istream &istream, int candlestickPeriod) {
     if (loadPointersToTrades(istream)) {
-        // Continue: create candles
+        // Trades have been successfully loaded, created historic data with candlesticks
+        auto currentStartTime = (std::time_t) (0);
+        double currentOpeningPrice, currentClosingPrice, currentLowestPrice, currentHighestPrice;
+
+        for (trade t: trades) {
+            std::time_t time = std::mktime(&t.time);
+            if (time != (std::time_t) (-1)) {
+                double difference = std::difftime(currentStartTime, time) / (60 * 60 * 24);
+                if (std::abs(difference) < candlestickPeriod) {
+                    currentLowestPrice = std::max(currentLowestPrice, t.price);
+                    currentHighestPrice = std::max(currentHighestPrice, t.price);
+                    currentClosingPrice = t.price;
+                } else {
+                    if (currentOpeningPrice != 0) {
+                        // save candle stick
+                        data.candlesticks.push_back(HistoricData::candlestick{candlestickPeriod,
+                                                                            currentOpeningPrice,
+                                                                            currentClosingPrice,
+                                                                            currentLowestPrice,
+                                                                            currentHighestPrice});
+                    }
+
+                    // Prepare next candlestick with current trade
+                    currentStartTime = mktime(&t.time);
+                    currentLowestPrice = t.price;
+                    currentHighestPrice = t.price;
+                    currentOpeningPrice = t.price;
+                    currentClosingPrice = t.price;
+                }
+            }
+        }
     } else {
         throw std::invalid_argument(error);
     }
@@ -118,7 +149,7 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
                     strptime(time_details, "%Y-%m-%dT%H:%M:%S", &tm);
                     try {
                         this->trades.push_back(trade{tm, std::stof(currentObject["price"])});
-                    } catch (std::exception& e) {
+                    } catch (std::exception &e) {
                         error.append(e.what());
                         return false;
                     }
