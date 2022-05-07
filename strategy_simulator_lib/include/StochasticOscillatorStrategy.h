@@ -6,9 +6,11 @@
 #include "IterableQueue.h"
 
 class StochasticOscillatorStrategy : public Strategy {
+public:
     StochasticOscillatorStrategy(int periodsForFastIndicator, int periodsForSlowIndicator);
 
-    void visitData(const HistoricData *data);
+    void simulateOnData(const HistoricData *data);
+
 private:
     bool fastIndicatorOnTop = false;
     int periodsForFastIndicator;

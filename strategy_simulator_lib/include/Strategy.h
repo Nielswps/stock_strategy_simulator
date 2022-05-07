@@ -8,10 +8,9 @@
 
 #include <string>
 #include "map"
-#include "Visitor.h"
 #include "HistoricData.h"
 
-class Strategy : public Visitor{
+class Strategy{
 
 };
 

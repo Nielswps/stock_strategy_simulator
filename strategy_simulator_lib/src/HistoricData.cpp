@@ -3,7 +3,3 @@
 //
 
 #include "../include/HistoricData.h"
-
-void HistoricData::accept(Strategy *visitor) {
-    visitor->visitData(this);
-}

@@ -9,12 +9,18 @@
 #include <vector>
 #include "Strategy.h"
 
-class  HistoricData : Data {
+class  HistoricData {
 public:
+    struct candlestick {
+        int period;
+        double openingPrice;
+        double closingPrice;
+        double lowestPrice;
+        double highestPrice;
+        bool upwardTrend;
+    };
+
     std::vector<candlestick> candlesticks{};
-
-    void accept(Strategy *visitor);
 };
-
 
 #endif //STOCK_EXCHANGE_HISTORICDATA_H
