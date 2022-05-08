@@ -12,15 +12,16 @@
 class  HistoricData {
 public:
     struct candlestick {
-        int period;
         double openingPrice;
         double closingPrice;
         double lowestPrice;
         double highestPrice;
         bool upwardTrend;
+        std::pair<time_t, time_t> timeSpan;
     };
 
     std::vector<candlestick> candlesticks{};
+    int candlestickPeriod;
 };
 
 #endif //STOCK_EXCHANGE_HISTORICDATA_H

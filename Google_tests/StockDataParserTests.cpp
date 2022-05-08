@@ -86,7 +86,7 @@ TEST_F(StockDataParserFixture, IStreamWithExampleDataConstructsObject) {
 }
 
 TEST_F(StockDataParserFixture, IFStreamWithExampleDataConstructsObject) {
-    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/example.json",
+    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/three_trade_test.json",
                                    std::ios_base::in};
 
     try {
@@ -119,5 +119,48 @@ TEST_F(StockDataParserFixture, WhiteSpaceCharactersConstructsObject) {
         ASSERT_EQ(stockData.trades.size(), 1);
     } catch (std::exception const &err) {
         FAIL() << err.what();
+    }
+}
+
+TEST_F(StockDataParserFixture, CandleSticksAreCreatedWhenParsingAcceptedTradeData) {
+    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/three_trade_test.json",
+                                   std::ios_base::in};
+
+    auto stockData = StockDataParser(*input).data;
+
+    ASSERT_FALSE(stockData.candlesticks.empty());
+    ASSERT_EQ(stockData.candlesticks.size(), 1);
+}
+
+TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALB) {
+    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
+                                   std::ios_base::in};
+
+    auto stockData = StockDataParser(*input).data;
+
+    ASSERT_FALSE(stockData.candlesticks.empty());
+    ASSERT_EQ(stockData.candlesticks.size(), 494);
+}
+
+TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALBWithTwoDayPeriod) {
+    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
+                                   std::ios_base::in};
+
+    auto stockData = StockDataParser(*input, 2).data;
+
+    ASSERT_FALSE(stockData.candlesticks.empty());
+    ASSERT_EQ(stockData.candlesticks.size(), 299);
+}
+
+TEST_F(StockDataParserFixture, CandleSticksAreCreatedInIncreasingTimeForPAALB) {
+    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
+                                   std::ios_base::in};
+
+    auto stockData = StockDataParser(*input).data;
+
+    ASSERT_TRUE(std::is_sorted(stockData.candlesticks.begin(), stockData.candlesticks.end(), [](HistoricData::candlestick a, HistoricData::candlestick b){ return a.timeSpan.first < b.timeSpan.first; }));
+
+    for (auto & candlestick : stockData.candlesticks) {
+        ASSERT_TRUE([&candlestick](){ return candlestick.timeSpan.first < candlestick.timeSpan.second; }());
     }
 }

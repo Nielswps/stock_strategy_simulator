@@ -10,6 +10,10 @@ StockDataParser::StockDataParser(std::istream &istream, int candlestickPeriod) {
         auto currentStartTime = (std::time_t) (0);
         double currentOpeningPrice, currentClosingPrice, currentLowestPrice, currentHighestPrice;
 
+        data.candlestickPeriod = candlestickPeriod;
+
+        std::sort(trades.begin(), trades.end(), [](trade a, trade b){ return mktime(&a.time) < mktime(&b.time); });
+
         for (trade t: trades) {
             std::time_t time = std::mktime(&t.time);
             if (time != (std::time_t) (-1)) {
@@ -21,11 +25,12 @@ StockDataParser::StockDataParser(std::istream &istream, int candlestickPeriod) {
                 } else {
                     if (currentOpeningPrice != 0) {
                         // save candle stick
-                        data.candlesticks.push_back(HistoricData::candlestick{candlestickPeriod,
-                                                                            currentOpeningPrice,
+                        data.candlesticks.push_back(HistoricData::candlestick{currentOpeningPrice,
                                                                             currentClosingPrice,
                                                                             currentLowestPrice,
-                                                                            currentHighestPrice});
+                                                                            currentHighestPrice,
+                                                                            currentOpeningPrice < currentClosingPrice,
+                                                                              std::pair<time_t, time_t>{currentStartTime, time}});
                     }
 
                     // Prepare next candlestick with current trade

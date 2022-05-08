@@ -12,7 +12,7 @@ protected:
     }
 };
 
-TEST_F(StrategyFixture, StochasticOscillatorStrategyInitializationWithFastLessThanSlowCausesException) {
+TEST_F(StrategyFixture, StochasticOscillatorStrategyInitializationWithFastLesserThanSlowCausesException) {
     EXPECT_THROW({
                      try {
                          auto strategy = StochasticOscillatorStrategy(20, 2);
@@ -21,4 +21,8 @@ TEST_F(StrategyFixture, StochasticOscillatorStrategyInitializationWithFastLessTh
                          throw;
                      }
                  }, std::invalid_argument);
+}
+
+TEST_F(StrategyFixture, StochasticOscillatorStrategyIsConstructedWithFastGreaterThanSlowCausesException) {
+    ASSERT_NO_THROW(auto strategy = StochasticOscillatorStrategy(1, 14););
 }
