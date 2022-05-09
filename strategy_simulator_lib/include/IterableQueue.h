@@ -1,7 +1,3 @@
-//
-// Created by niels on 5/7/22.
-//
-
 #ifndef STOCK_EXCHANGE_ITERABLEQUEUE_H
 #define STOCK_EXCHANGE_ITERABLEQUEUE_H
 

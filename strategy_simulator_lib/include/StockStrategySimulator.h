@@ -1,15 +1,11 @@
-//
-// Created by niels on 5/9/22.
-//
-
-#ifndef STOCK_EXCHANGE_SIMULATOR_H
-#define STOCK_EXCHANGE_SIMULATOR_H
+#ifndef STOCK_EXCHANGE_STOCKSTRATEGYSIMULATOR_H
+#define STOCK_EXCHANGE_STOCKSTRATEGYSIMULATOR_H
 
 
 #include <memory>
 #include "Strategy.h"
 
-class Simulator {
+class StockStrategySimulator {
 public:
     struct SimulationResult {
         double profit;
@@ -20,4 +16,4 @@ public:
 };
 
 
-#endif //STOCK_EXCHANGE_SIMULATOR_H
+#endif //STOCK_EXCHANGE_STOCKSTRATEGYSIMULATOR_H

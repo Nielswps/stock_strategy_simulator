@@ -1,13 +1,9 @@
-//
-// Created by niels on 5/9/22.
-//
-
-#include "../include/Simulator.h"
+#include "../include/StockStrategySimulator.h"
 #include "../include/StockDataParser.h"
 #include <fstream>
 #include <iostream>
 
-Simulator::SimulationResult Simulator::simulateStrategy(Strategy& strategy, const std::string& pathToFile, int candleStickPeriodInDays, double startingCapital) {
+StockStrategySimulator::SimulationResult StockStrategySimulator::simulateStrategy(Strategy& strategy, const std::string& pathToFile, int candleStickPeriodInDays, double startingCapital) {
     std::shared_ptr<std::vector<Trade>> trades = std::make_shared<std::vector<Trade>>();
     auto input = new std::ifstream{pathToFile, std::ios_base::in};
     auto stockData = StockDataParser(*input, candleStickPeriodInDays).data;
