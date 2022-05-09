@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include "../strategy_simulator_lib/include/StockDataParser.h"
+#include "../strategy_simulator_lib/include/StochasticOscillatorStrategy.h"
+#include "../strategy_simulator_lib/include/StockStrategySimulator.h"
 
 class ModuleFixture : public ::testing::Test {
 protected:
@@ -21,4 +23,11 @@ TEST_F(ModuleFixture, LargestDataFileCanBeParsedWithoutCrash) {
     } catch (std::exception const &err) {
         FAIL() << err.what();
     }
+}
+
+TEST_F(ModuleFixture, SimulationOfStochasticOscillatorOnPAALBGivesLoss) {
+    auto s = StochasticOscillatorStrategy{14, 3};
+    auto res = StockStrategySimulator::simulateStrategy(s, "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json", 3, 10000);
+
+    ASSERT_LT(res.profit, 0);
 }

@@ -1,7 +1,3 @@
-//
-// Created by niels on 5/5/22.
-//
-
 #ifndef STOCK_EXCHANGE_STOCKDATAPARSER_H
 #define STOCK_EXCHANGE_STOCKDATAPARSER_H
 

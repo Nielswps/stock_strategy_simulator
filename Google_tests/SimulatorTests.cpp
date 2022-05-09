@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../strategy_simulator_lib/include/Simulator.h"
+#include "../strategy_simulator_lib/include/StockStrategySimulator.h"
 #include "../strategy_simulator_lib/include/StochasticOscillatorStrategy.h"
 
 class SimulatorFixture : public ::testing::Test {
@@ -31,24 +31,24 @@ class TestStrategy : public Strategy {
 };
 
 TEST_F(SimulatorFixture, SimulatorCanBeConstructed) {
-    ASSERT_NO_THROW(auto sim = Simulator{});
+    ASSERT_NO_THROW(auto sim = StockStrategySimulator{});
 }
 
 TEST_F(SimulatorFixture, SimulatorCanSimulateTransactionWithoutException) {
     auto strat = TestStrategy{};
-    Simulator::SimulationResult res;
+    StockStrategySimulator::SimulationResult res;
 
-    ASSERT_NO_THROW(res = Simulator::simulateStrategy(strat,
-                                         "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
-                                         1, 100000.));
+    ASSERT_NO_THROW(res = StockStrategySimulator::simulateStrategy(strat,
+                                                                   "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
+                                                                   1, 100000.));
     ASSERT_EQ(res.trades->size(), 490);
 }
 
 TEST_F(SimulatorFixture, SimulationByingSotkcsAtOneAndSellingAtTwoReturnsTheDoubleProfit) {
     auto strat = TestStrategy{};
-    auto res = Simulator::simulateStrategy(strat,
-                                         "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
-                                         1, 100000.);
+    auto res = StockStrategySimulator::simulateStrategy(strat,
+                                                        "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
+                                                        1, 100000.);
 
     ASSERT_EQ(res.profit, 489);
     ASSERT_EQ(res.trades->size(), 490);
@@ -56,9 +56,9 @@ TEST_F(SimulatorFixture, SimulationByingSotkcsAtOneAndSellingAtTwoReturnsTheDoub
 
 TEST_F(SimulatorFixture, TradesAreBuyAndSellAsExpected) {
     auto strat = TestStrategy{};
-    auto res = Simulator::simulateStrategy(strat,
-                                    "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
-                                    1, 100000.);
+    auto res = StockStrategySimulator::simulateStrategy(strat,
+                                                        "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
+                                                        1, 100000.);
 
     for (int i = 0; i < res.trades->size() - 1; i++) {
         ASSERT_TRUE((res.trades->data() + i)->buy);
