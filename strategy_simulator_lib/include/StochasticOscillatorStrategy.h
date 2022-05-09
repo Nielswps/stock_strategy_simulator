@@ -9,14 +9,14 @@ class StochasticOscillatorStrategy : public Strategy {
 public:
     StochasticOscillatorStrategy(int periodsForFastIndicator, int periodsForSlowIndicator);
 
-    void simulateOnData(const HistoricData *data);
+    void simulateOnData(const HistoricData *data, double availableMoney, void (*makeTrade)(Trade)) override;
 
 private:
     bool fastIndicatorOnTop = false;
     int periodsForFastIndicator;
     int periodsForSlowIndicator;
-    double fastStochasticIndicator;
-    double slowStochasticIndicator;
+    double fastStochasticIndicator = 0;
+    double slowStochasticIndicator = 0;
     IterableQueue<double> fastStochasticIndicatorHistory{};
 };
 

@@ -7,7 +7,6 @@
 
 
 #include <vector>
-#include "Strategy.h"
 
 class  HistoricData {
 public:
