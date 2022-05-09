@@ -9,15 +9,16 @@
 
 Simulator::SimulationResult
 Simulator::simulateStrategy(Strategy& strategy, const std::string& pathToFile, int candleStickPeriodInDays, double startMoney) {
+    std::shared_ptr<std::vector<Trade>> trades = std::make_shared<std::vector<Trade>>();
     auto input = new std::ifstream{pathToFile, std::ios_base::in};
     auto stockData = StockDataParser(*input, candleStickPeriodInDays).data;
-    auto pointerToTrades = this->trades;
 
-    auto makeTrade = [pointerToTrades](Trade t) {
-        pointerToTrades->emplace_back(t);
+    // Define method for making a trade
+    auto makeTrade = [trades](Trade t) {
+        trades->emplace_back(t);
     };
 
+    // Simulate strategy on loaded data and return final capital and trade history
     auto finalCapital = strategy.simulateOnData(&stockData, startMoney, static_cast<const std::function<void(Trade)> &>(makeTrade));
-
     return SimulationResult{finalCapital - startMoney, trades};
 }

@@ -24,7 +24,7 @@ class TestStrategy : public Strategy {
         }
 
         makeTrade(
-                Trade{true, static_cast<int>(data->candlesticks.size()), 2, data->candlesticks.back().timeSpan.second});
+                Trade{false, static_cast<int>(data->candlesticks.size()), 2, data->candlesticks.back().timeSpan.second});
         currentCapital += static_cast<int>(data->candlesticks.size() * 2);
         return currentCapital;
     };
@@ -35,24 +35,34 @@ TEST_F(SimulatorFixture, SimulatorCanBeConstructed) {
 }
 
 TEST_F(SimulatorFixture, SimulatorCanSimulateTransactionWithoutException) {
-    auto sim = Simulator{};
     auto strat = TestStrategy{};
     Simulator::SimulationResult res;
 
-    ASSERT_NO_THROW(res = sim.simulateStrategy(strat,
+    ASSERT_NO_THROW(res = Simulator::simulateStrategy(strat,
                                          "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                          1, 100000.));
     ASSERT_EQ(res.trades->size(), 495);
 }
 
 TEST_F(SimulatorFixture, SimulationByingSotkcsAtOneAndSellingAtTwoReturnsTheDoubleProfit) {
-    auto sim = Simulator{};
     auto strat = TestStrategy{};
-
-    auto res = sim.simulateStrategy(strat,
+    auto res = Simulator::simulateStrategy(strat,
                                          "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                          1, 100000.);
 
     ASSERT_EQ(res.profit, 494);
     ASSERT_EQ(res.trades->size(), 495);
+}
+
+TEST_F(SimulatorFixture, TradesAreBuyAndSellAsExpected) {
+    auto strat = TestStrategy{};
+    auto res = Simulator::simulateStrategy(strat,
+                                    "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
+                                    1, 100000.);
+
+    for (int i = 0; i < res.trades->size() - 1; i++) {
+        ASSERT_TRUE((res.trades->data() + i)->buy);
+    }
+
+    ASSERT_FALSE((res.trades->back()).buy);
 }

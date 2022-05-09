@@ -16,9 +16,7 @@ public:
         std::shared_ptr<std::vector<Trade>> trades;
     };
 
-    SimulationResult simulateStrategy(Strategy& strategy, const std::string& pathToFile, int candleStickPeriodInDays, double startMoney);
-private:
-    std::shared_ptr<std::vector<Trade>> trades = std::make_shared<std::vector<Trade>>();
+    static SimulationResult simulateStrategy(Strategy& strategy, const std::string& pathToFile, int candleStickPeriodInDays, double startMoney);
 };
 
 
