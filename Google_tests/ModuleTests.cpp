@@ -14,7 +14,7 @@ protected:
 };
 
 TEST_F(ModuleFixture, LargestDataFileCanBeParsedWithoutCrash) {
-    auto input = new std::ifstream{"/home/niels/Documents/uni/8. Semester/sP/exam_project/json-2y_2010-11-01_2012-11-01/json-2y/HMB.json",std::ios_base::in};
+    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/HMB.json",std::ios_base::in};
     try {
         auto stockData = StockDataParser(*input);
         ASSERT_EQ(stockData.trades.size(), 4030697);
