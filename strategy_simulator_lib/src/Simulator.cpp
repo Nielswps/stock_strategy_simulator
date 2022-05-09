@@ -7,8 +7,7 @@
 #include <fstream>
 #include <iostream>
 
-Simulator::SimulationResult
-Simulator::simulateStrategy(Strategy& strategy, const std::string& pathToFile, int candleStickPeriodInDays, double startMoney) {
+Simulator::SimulationResult Simulator::simulateStrategy(Strategy& strategy, const std::string& pathToFile, int candleStickPeriodInDays, double startingCapital) {
     std::shared_ptr<std::vector<Trade>> trades = std::make_shared<std::vector<Trade>>();
     auto input = new std::ifstream{pathToFile, std::ios_base::in};
     auto stockData = StockDataParser(*input, candleStickPeriodInDays).data;
@@ -19,6 +18,6 @@ Simulator::simulateStrategy(Strategy& strategy, const std::string& pathToFile, i
     };
 
     // Simulate strategy on loaded data and return final capital and trade history
-    auto finalCapital = strategy.simulateOnData(&stockData, startMoney, static_cast<const std::function<void(Trade)> &>(makeTrade));
-    return SimulationResult{finalCapital - startMoney, trades};
+    auto finalCapital = strategy.simulateOnData(&stockData, startingCapital, static_cast<const std::function<void(Trade)> &>(makeTrade));
+    return SimulationResult{finalCapital - startingCapital, trades};
 }

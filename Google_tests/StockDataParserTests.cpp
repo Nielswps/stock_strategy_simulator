@@ -23,13 +23,11 @@ protected:
 
 TEST_F(StockDataParserFixture, IStreamContainingWordThrowsException) {
     auto input = new std::istringstream{"hee"};
-
     ASSERT_THROW(auto stockData = StockDataParser(*input), std::invalid_argument);
 }
 
 TEST_F(StockDataParserFixture, EmptyKeyThrowsException) {
     auto input = new std::istringstream{R"({"": "value"})"};
-
     EXPECT_THROW({
                      try {
                          auto stockData = StockDataParser(*input);
@@ -42,7 +40,6 @@ TEST_F(StockDataParserFixture, EmptyKeyThrowsException) {
 
 TEST_F(StockDataParserFixture, ClosingBracketBeforeOpeningBracketThrowsException) {
     auto input = new std::istringstream{R"({"key": ]})"};
-
     EXPECT_THROW({
                      try {
                          auto stockData = StockDataParser(*input);
@@ -55,7 +52,6 @@ TEST_F(StockDataParserFixture, ClosingBracketBeforeOpeningBracketThrowsException
 
 TEST_F(StockDataParserFixture, NoDataThrowsException) {
     auto input = new std::istringstream{R"({})"};
-
     EXPECT_THROW({
                      try {
                          auto stockData = StockDataParser(*input);
@@ -68,13 +64,11 @@ TEST_F(StockDataParserFixture, NoDataThrowsException) {
 
 TEST_F(StockDataParserFixture, NoTradesKeyThrowsException) {
     auto input = new std::istringstream{R"({"key": "value"})"};
-
     ASSERT_THROW(auto stockData = StockDataParser(*input), std::invalid_argument);
 }
 
 TEST_F(StockDataParserFixture, IStreamWithExampleDataConstructsObject) {
     auto input = new std::istringstream{R"({"trades": [{"time":"2012-10-31T08:00:00.000+0100","price":1278}]})"};
-
     try {
         auto stockData = StockDataParser(*input);
 
@@ -86,12 +80,11 @@ TEST_F(StockDataParserFixture, IStreamWithExampleDataConstructsObject) {
 }
 
 TEST_F(StockDataParserFixture, IFStreamWithExampleDataConstructsObject) {
-    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/three_trade_test.json",
-                                   std::ios_base::in};
-
+    auto input = new std::ifstream{
+            "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/three_trade_test.json",
+            std::ios_base::in};
     try {
         auto stockData = StockDataParser(*input);
-
         ASSERT_EQ(stockData.trades.size(), 3);
 
         std::vector<StockDataParser::trade> expectedTrades{
@@ -123,9 +116,9 @@ TEST_F(StockDataParserFixture, WhiteSpaceCharactersConstructsObject) {
 }
 
 TEST_F(StockDataParserFixture, CandleSticksAreCreatedWhenParsingAcceptedTradeData) {
-    auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/three_trade_test.json",
-                                   std::ios_base::in};
-
+    auto input = new std::ifstream{
+            "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/three_trade_test.json",
+            std::ios_base::in};
     auto stockData = StockDataParser(*input).data;
 
     ASSERT_FALSE(stockData.candlesticks.empty());
@@ -135,17 +128,15 @@ TEST_F(StockDataParserFixture, CandleSticksAreCreatedWhenParsingAcceptedTradeDat
 TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALB) {
     auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                    std::ios_base::in};
-
     auto stockData = StockDataParser(*input).data;
 
     ASSERT_FALSE(stockData.candlesticks.empty());
-    ASSERT_EQ(stockData.candlesticks.size(), 494);
+    ASSERT_EQ(stockData.candlesticks.size(), 489);
 }
 
 TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALBWithTwoDayPeriod) {
     auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                    std::ios_base::in};
-
     auto stockData = StockDataParser(*input, 2).data;
 
     ASSERT_FALSE(stockData.candlesticks.empty());
@@ -155,12 +146,56 @@ TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALBWithTwoDayPeriod) {
 TEST_F(StockDataParserFixture, CandleSticksAreCreatedInIncreasingTimeForPAALB) {
     auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                    std::ios_base::in};
-
     auto stockData = StockDataParser(*input).data;
 
-    ASSERT_TRUE(std::is_sorted(stockData.candlesticks.begin(), stockData.candlesticks.end(), [](HistoricData::candlestick a, HistoricData::candlestick b){ return a.timeSpan.first < b.timeSpan.first; }));
+    ASSERT_TRUE(std::is_sorted(stockData.candlesticks.begin(), stockData.candlesticks.end(),
+                               [](HistoricData::candlestick a, HistoricData::candlestick b) {
+                                   return a.timeSpan.first < b.timeSpan.first;
+                               }));
 
-    for (auto & candlestick : stockData.candlesticks) {
-        ASSERT_TRUE([&candlestick](){ return candlestick.timeSpan.first < candlestick.timeSpan.second; }());
+    for (auto &candlestick: stockData.candlesticks) {
+        ASSERT_TRUE([&candlestick]() { return candlestick.timeSpan.first < candlestick.timeSpan.second; }());
     }
+}
+
+TEST_F(StockDataParserFixture, GeneratedTradesHaveCorrectDateAndTimeAtEightAM) {
+    auto input = new std::istringstream{R"({"trades": [{"time":"2012-10-31T08:00:00.000+0100","price":1278}]})"};
+    auto stockData = StockDataParser(*input);
+
+    auto expectedDate = tm{
+            0,
+            0,
+            8,
+            31,
+            9,
+            112
+    };
+
+    ASSERT_EQ(stockData.trades.back().time.tm_year, expectedDate.tm_year);
+    ASSERT_EQ(stockData.trades.back().time.tm_mon, expectedDate.tm_mon);
+    ASSERT_EQ(stockData.trades.back().time.tm_mday, expectedDate.tm_mday);
+    ASSERT_EQ(stockData.trades.back().time.tm_hour, expectedDate.tm_hour);
+    ASSERT_EQ(stockData.trades.back().time.tm_min, expectedDate.tm_min);
+    ASSERT_EQ(stockData.trades.back().time.tm_sec, expectedDate.tm_sec);
+}
+
+TEST_F(StockDataParserFixture, GeneratedTradesHaveCorrectDateAndTimeAtAlmostNoonWithSeconds) {
+    auto input = new std::istringstream{R"({"trades": [{"time":"2010-6-4T11:45:30.000+0100","price":1278}]})"};
+    auto stockData = StockDataParser(*input);
+
+    auto expectedDate = tm{
+            30,
+            45,
+            11,
+            4,
+            5,
+            110
+    };
+
+    ASSERT_EQ(stockData.trades.back().time.tm_year, expectedDate.tm_year);
+    ASSERT_EQ(stockData.trades.back().time.tm_mon, expectedDate.tm_mon);
+    ASSERT_EQ(stockData.trades.back().time.tm_mday, expectedDate.tm_mday);
+    ASSERT_EQ(stockData.trades.back().time.tm_hour, expectedDate.tm_hour);
+    ASSERT_EQ(stockData.trades.back().time.tm_min, expectedDate.tm_min);
+    ASSERT_EQ(stockData.trades.back().time.tm_sec, expectedDate.tm_sec);
 }
