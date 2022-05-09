@@ -40,7 +40,7 @@ double StochasticOscillatorStrategy::simulateOnData(const HistoricData *data, do
 
         if (!fastIndicatorOnTop) {
             if (fastStochasticIndicator > slowStochasticIndicator) {
-                // Buy stock for all currentCapital available
+                // Buy stock for all capital available
                 int amount = static_cast<int>(floor(currentCapital / data->candlesticks[i].closingPrice));
                 if (amount > 0) {
                     makeTrade(Trade{true, amount, data->candlesticks[i].closingPrice, data->candlesticks[i+1].timeSpan.second});
