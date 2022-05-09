@@ -7,6 +7,7 @@
 
 
 #include <string>
+#include <functional>
 #include "map"
 #include "HistoricData.h"
 
@@ -19,9 +20,7 @@ struct Trade {
 
 class Strategy {
 public:
-    virtual void simulateOnData(const HistoricData *data, double availableMoney, void (*makeTrade)(Trade)) = 0;
-protected:
-    double availableMoney = 1000;
+    virtual double simulateOnData(const HistoricData *data, double availableCapital, std::function<void(Trade)> makeTrade) = 0;
 };
 
 

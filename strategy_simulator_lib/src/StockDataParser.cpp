@@ -96,6 +96,10 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
                     return false;
                 }
 
+                if (isParsingString) {
+                    loadedChars.append(&currentChar);
+                }
+
                 isParsingValue = true;
                 break;
 
