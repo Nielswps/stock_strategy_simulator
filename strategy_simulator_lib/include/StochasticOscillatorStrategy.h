@@ -9,7 +9,7 @@ class StochasticOscillatorStrategy : public Strategy {
 public:
     StochasticOscillatorStrategy(int periodsForFastIndicator, int periodsForSlowIndicator);
 
-    void simulateOnData(const HistoricData *data, double availableMoney, void (*makeTrade)(Trade)) override;
+    double simulateOnData(const HistoricData *data, double availableCapital, std::function<void(Trade)> makeTrade) override;
 
 private:
     bool fastIndicatorOnTop = false;

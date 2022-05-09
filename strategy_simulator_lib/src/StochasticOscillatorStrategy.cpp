@@ -15,8 +15,9 @@ StochasticOscillatorStrategy::StochasticOscillatorStrategy(int periodsForFastInd
     this->periodsForSlowIndicator = periodsForSlowIndicator;
 }
 
-void StochasticOscillatorStrategy::simulateOnData(const HistoricData *data, double availableMoney, void (*makeTrade)(Trade)) {
-    double money = availableMoney;
+double StochasticOscillatorStrategy::simulateOnData(const HistoricData *data, double availableCapital, std::function<void(
+        Trade)> makeTrade) {
+    double currentCapital = availableCapital;
     int ownedStocks = 0;
 
     for (int i = this->periodsForSlowIndicator; i<data->candlesticks.size(); i++) {
@@ -39,11 +40,11 @@ void StochasticOscillatorStrategy::simulateOnData(const HistoricData *data, doub
 
         if (!fastIndicatorOnTop) {
             if (fastStochasticIndicator > slowStochasticIndicator) {
-                // Buy stock for all money available
-                int amount = static_cast<int>(floor(money / data->candlesticks[i].closingPrice));
+                // Buy stock for all currentCapital available
+                int amount = static_cast<int>(floor(currentCapital / data->candlesticks[i].closingPrice));
                 if (amount > 0) {
-                    makeTrade(Trade{true, amount, data->candlesticks[i].closingPrice, data->candlesticks[i+1].timeSpan.first});
-                    money -= data->candlesticks[i].closingPrice * amount;
+                    makeTrade(Trade{true, amount, data->candlesticks[i].closingPrice, data->candlesticks[i+1].timeSpan.second});
+                    currentCapital -= data->candlesticks[i].closingPrice * amount;
                 }
 
                 fastIndicatorOnTop = true;
@@ -52,12 +53,17 @@ void StochasticOscillatorStrategy::simulateOnData(const HistoricData *data, doub
             if (fastStochasticIndicator < slowStochasticIndicator) {
                 // Sell all owned stocks
                 if (ownedStocks > 0) {
-                    makeTrade(Trade{false, ownedStocks, data->candlesticks[i].closingPrice, data->candlesticks[i+1].timeSpan.first});
-                    money += data->candlesticks[i].closingPrice * ownedStocks;
+                    makeTrade(Trade{false, ownedStocks, data->candlesticks[i].closingPrice, data->candlesticks[i].timeSpan.second});
+                    currentCapital += data->candlesticks[i].closingPrice * ownedStocks;
                     ownedStocks = 0;
                 }
                 fastIndicatorOnTop = false;
             }
         }
     }
+
+    // Sell all remaining stocks
+    makeTrade(Trade{false, ownedStocks, data->candlesticks.back().closingPrice, data->candlesticks.back().timeSpan.second});
+    currentCapital += data->candlesticks.back().closingPrice * ownedStocks;
+    return currentCapital;
 }
