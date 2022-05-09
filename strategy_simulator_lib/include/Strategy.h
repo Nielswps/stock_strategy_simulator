@@ -8,10 +8,20 @@
 
 #include <string>
 #include "map"
+#include "HistoricData.h"
+
+struct Trade {
+    bool buy;
+    int amount;
+    double price;
+    time_t date;
+};
 
 class Strategy {
 public:
-
+    virtual void simulateOnData(const HistoricData *data, double availableMoney, void (*makeTrade)(Trade)) = 0;
+protected:
+    double availableMoney = 1000;
 };
 
 
