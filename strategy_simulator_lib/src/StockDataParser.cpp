@@ -2,7 +2,6 @@
 #include <map>
 #include <stack>
 #include "../include/StockDataParser.h"
-#include "../include/HistoricData.h"
 
 StockDataParser::StockDataParser(std::istream &istream, int candlestickPeriod) {
     if (loadPointersToTrades(istream)) {
