@@ -137,14 +137,7 @@ TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALB) {
 TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALBWithTwoDayPeriod) {
     auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                    std::ios_base::in};
-
-    auto startTime = std::chrono::system_clock::now();
-
     auto stockData = StockDataParser(*input, 2).data;
-
-    auto endTime = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = endTime-startTime;
-    std::cout << "Execution took: " << elapsed_seconds.count() << std::endl;
 
     ASSERT_FALSE(stockData.candlesticks.empty());
     ASSERT_EQ(stockData.candlesticks.size(), 299);
