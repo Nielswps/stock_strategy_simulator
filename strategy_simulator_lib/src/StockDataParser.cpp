@@ -4,7 +4,7 @@
 #include "../include/StockDataParser.h"
 
 StockDataParser::StockDataParser(std::istream &istream, int candlestickPeriod) {
-    if (loadPointersToTrades(istream)) {
+    if (loadTrades(istream)) {
         // Trades have been successfully loaded, created historic data with candlesticks
         auto initialTrade = trades.top();
         auto currentStartTime = (std::time_t) mktime(&initialTrade.time);
@@ -67,7 +67,7 @@ StockDataParser::StockDataParser(std::istream &istream, int candlestickPeriod) {
     }
 }
 
-bool StockDataParser::loadPointersToTrades(std::istream &istream) {
+bool StockDataParser::loadTrades(std::istream &istream) {
     std::stack<parsable> parsedObjectStack;
     char currentChar;
     std::string loadedChars;
