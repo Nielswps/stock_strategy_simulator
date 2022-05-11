@@ -2,36 +2,39 @@
 #include <map>
 #include <stack>
 #include "../include/StockDataParser.h"
-#include "../include/HistoricData.h"
 
 StockDataParser::StockDataParser(std::istream &istream, int candlestickPeriod) {
     if (loadPointersToTrades(istream)) {
         // Trades have been successfully loaded, created historic data with candlesticks
-        auto currentStartTime = (std::time_t) (0);
-        double currentOpeningPrice, currentClosingPrice, currentLowestPrice, currentHighestPrice;
+        auto initialTrade = trades.top();
+        auto currentStartTime = (std::time_t) mktime(&initialTrade.time);
+        double currentOpeningPrice = initialTrade.price, currentClosingPrice = initialTrade.price,
+                currentLowestPrice = initialTrade.price, currentHighestPrice = initialTrade.price;
+        bool allDataCandlesticksSaved = false;
+        trades.pop();
 
-        data.candlestickPeriod = candlestickPeriod;
+        while (!trades.empty()) {
+            trade &t = trades.top();
 
-        std::sort(trades.begin(), trades.end(), [](trade a, trade b){ return mktime(&a.time) < mktime(&b.time); });
-
-        for (trade t: trades) {
             std::time_t time = std::mktime(&t.time);
             if (time != (std::time_t) (-1)) {
                 double difference = std::difftime(currentStartTime, time) / (60 * 60 * 24);
                 if (std::abs(difference) < candlestickPeriod) {
-                    currentLowestPrice = std::max(currentLowestPrice, t.price);
+                    currentLowestPrice = std::min(currentLowestPrice, t.price);
                     currentHighestPrice = std::max(currentHighestPrice, t.price);
                     currentClosingPrice = t.price;
+
+                    allDataCandlesticksSaved = false;
                 } else {
-                    if (currentOpeningPrice != 0) {
-                        // save candle stick
-                        data.candlesticks.push_back(HistoricData::candlestick{currentOpeningPrice,
-                                                                            currentClosingPrice,
-                                                                            currentLowestPrice,
-                                                                            currentHighestPrice,
-                                                                            currentOpeningPrice < currentClosingPrice,
-                                                                              std::pair<time_t, time_t>{currentStartTime, time}});
-                    }
+                    // save candle stick
+                    data.candlesticks.push_back(HistoricData::candlestick{
+                            currentOpeningPrice,
+                            currentClosingPrice,
+                            currentLowestPrice,
+                            currentHighestPrice,
+                            currentOpeningPrice < currentClosingPrice,
+                            std::pair<time_t, time_t>{currentStartTime, time}
+                    });
 
                     // Prepare next candlestick with current trade
                     currentStartTime = mktime(&t.time);
@@ -39,9 +42,26 @@ StockDataParser::StockDataParser(std::istream &istream, int candlestickPeriod) {
                     currentHighestPrice = t.price;
                     currentOpeningPrice = t.price;
                     currentClosingPrice = t.price;
+
+                    allDataCandlesticksSaved = true;
                 }
             }
+
+            trades.pop();
         }
+
+        // Make sure to push any dangling candlestick to the vector
+        if (!allDataCandlesticksSaved) {
+            data.candlesticks.push_back(HistoricData::candlestick{
+                    currentOpeningPrice,
+                    currentClosingPrice,
+                    currentLowestPrice,
+                    currentHighestPrice,
+                    currentOpeningPrice < currentClosingPrice,
+                    std::pair<time_t, time_t>{currentStartTime, reinterpret_cast<const long>(time)}
+            });
+        }
+
     } else {
         throw std::invalid_argument(error);
     }
@@ -110,8 +130,8 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
                 }
 
                 currentObject[key] = loadedChars;
-                loadedChars.clear();
                 isParsingValue = false;
+                loadedChars.clear();
                 key.clear();
                 break;
 
@@ -153,11 +173,12 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
                 }
 
                 if (currentObject.contains("time") && currentObject.contains("price")) {
-                    const char *time_details = currentObject["time"].c_str();
+                    std::string time_details = currentObject["time"];
                     struct tm tm{};
-                    strptime(time_details, "%Y-%m-%dT%H:%M:%S", &tm);
+                    strptime(time_details.c_str(), "%Y-%m-%dT%H:%M:%S", &tm);
+
                     try {
-                        this->trades.push_back(trade{tm, std::stof(currentObject["price"])});
+                        this->trades.push(trade{tm, std::stof(currentObject["price"])});
                     } catch (std::exception &e) {
                         error.append(e.what());
                         return false;

@@ -9,10 +9,16 @@ class StockStrategySimulator {
 public:
     struct SimulationResult {
         double profit;
-        std::shared_ptr<std::vector<Trade>> trades;
+        std::vector<Trade> trades;
     };
 
-    static SimulationResult simulateStrategy(Strategy& strategy, const std::string& pathToFile, int candleStickPeriodInDays, double startingCapital);
+    static std::vector<SimulationResult>
+    simulateStrategy(Strategy &strategy, const std::string &path, int candleStickPeriodInDays, double startingCapital);
+
+private:
+    static SimulationResult
+    getResultForFile(Strategy &strategy, const std::string &path, const int &candleStickPeriodInDays,
+                     const double &startingCapital);
 };
 
 
