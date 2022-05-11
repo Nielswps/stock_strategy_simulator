@@ -24,7 +24,8 @@ class TestStrategy : public Strategy {
         }
 
         makeTrade(
-                Trade{false, static_cast<int>(data->candlesticks.size()), 2, data->candlesticks.back().timeSpan.second});
+                Trade{false, static_cast<int>(data->candlesticks.size()), 2,
+                      data->candlesticks.back().timeSpan.second});
         currentCapital += static_cast<int>(data->candlesticks.size() * 2);
         return currentCapital;
     };

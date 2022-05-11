@@ -16,7 +16,8 @@ struct Trade {
 
 class Strategy {
 public:
-    virtual double simulateOnData(const HistoricData *data, double availableCapital, std::function<void(Trade)> makeTrade) = 0;
+    virtual double
+    simulateOnData(const HistoricData *data, double availableCapital, std::function<void(Trade)> makeTrade) = 0;
 };
 
 

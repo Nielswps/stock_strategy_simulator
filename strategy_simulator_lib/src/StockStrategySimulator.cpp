@@ -6,19 +6,21 @@
 #include <filesystem>
 #include <future>
 
+namespace fs = std::filesystem;
+
 std::vector<StockStrategySimulator::SimulationResult>
 StockStrategySimulator::simulateStrategy(Strategy &strategy, const std::string &path, int candleStickPeriodInDays,
                                          double startingCapital) {
     struct stat s{};
     if (stat(path.c_str(), &s) == 0) {
         if (s.st_mode & S_IFDIR) {
-            auto directoryIterator = std::filesystem::directory_iterator(path,
-                                                                         std::filesystem::directory_options::skip_permission_denied);
+            auto directoryIterator = fs::directory_iterator(path,
+                                                            fs::directory_options::skip_permission_denied);
             std::vector<std::future<SimulationResult>> results;
 
             // Start threads for each file to run the simulation on and execute
             for (const auto &entry: directoryIterator) {
-                if (!std::filesystem::is_regular_file(entry.path()) || !(std::ifstream{entry.path()}.good())) continue;
+                if (!fs::is_regular_file(entry.path()) || !(std::ifstream{entry.path()}.good())) continue;
 
                 auto future = std::async(std::launch::async, [&]() {
                     return getResultForFile(strategy, entry.path(), candleStickPeriodInDays, startingCapital);

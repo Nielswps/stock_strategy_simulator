@@ -12,10 +12,13 @@ public:
         std::vector<Trade> trades;
     };
 
-    static std::vector<SimulationResult> simulateStrategy(Strategy& strategy, const std::string& path, int candleStickPeriodInDays, double startingCapital);
+    static std::vector<SimulationResult>
+    simulateStrategy(Strategy &strategy, const std::string &path, int candleStickPeriodInDays, double startingCapital);
 
 private:
-    static SimulationResult getResultForFile(Strategy &strategy, const std::string &path, const int &candleStickPeriodInDays, const double &startingCapital);
+    static SimulationResult
+    getResultForFile(Strategy &strategy, const std::string &path, const int &candleStickPeriodInDays,
+                     const double &startingCapital);
 };
 
 
