@@ -3,3 +3,4 @@ cmake-build-release
 .idea
 Google_tests/test_data
 build
+/Google_tests/include/

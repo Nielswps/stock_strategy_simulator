@@ -77,9 +77,11 @@ double StochasticOscillatorStrategy::simulateOnData(const HistoricData *data, do
         }
     }
 
-    // Sell all remaining stocks
-    makeTrade(Trade{false, ownedStocks, data->candlesticks.back().closingPrice, data->candlesticks.back().timeSpan.second});
-    currentCapital += data->candlesticks.back().closingPrice * ownedStocks;
+    // Sell all remaining stocks if any
+    if (ownedStocks > 0) {
+        makeTrade(Trade{false, ownedStocks, data->candlesticks.back().closingPrice, data->candlesticks.back().timeSpan.second});
+        currentCapital += data->candlesticks.back().closingPrice * ownedStocks;
+    }
 
     return currentCapital;
 }

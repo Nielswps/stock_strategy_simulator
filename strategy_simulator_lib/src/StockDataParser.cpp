@@ -103,7 +103,7 @@ bool StockDataParser::loadPointersToTrades(std::istream &istream) {
                 break;
 
             case ':':
-                if (key.empty() && isParsingString) {
+                if (key.empty()) {
                     error.append("':' encounter without key");
                     return false;
                 }

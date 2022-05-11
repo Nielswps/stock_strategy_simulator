@@ -128,7 +128,7 @@ TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALB) {
                                    std::ios_base::in};
     auto stockData = StockDataParser(*input).data;
 
-    ASSERT_EQ(stockData.candlesticks.size(), 428);
+    ASSERT_EQ(stockData.candlesticks.size(), 350);
 }
 
 TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALBWithTwoDayPeriod) {
@@ -136,7 +136,7 @@ TEST_F(StockDataParserFixture, CandleSticksAreCreatedForPAALBWithTwoDayPeriod) {
                                    std::ios_base::in};
     auto stockData = StockDataParser(*input, 2).data;
 
-    ASSERT_EQ(stockData.candlesticks.size(), 270);
+    ASSERT_EQ(stockData.candlesticks.size(), 225);
 }
 
 TEST_F(StockDataParserFixture, CandleSticksAreCreatedInIncreasingTimeForPAALB) {
@@ -182,7 +182,7 @@ TEST_F(StockDataParserFixture, GeneratedTradesHaveCorrectDateAndTimeAtAlmostNoon
             5,
             110
     };
-    
+
     ASSERT_EQ(stockData.candlesticks[0].timeSpan.first, mktime(&expectedDate));
 
 }
