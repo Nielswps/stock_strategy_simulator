@@ -1,4 +1,0 @@
-# ninja log v5
-0	653	1652173412343194995	benchmark/CMakeFiles/Benchmark.dir/Benchmarker.cpp.o	e895c813b80eb6a8
-0	1237	1652173412927193488	benchmark/CMakeFiles/Benchmark.dir/__/strategy_simulator_lib/src/StockDataParser.cpp.o	77007f559e9e90f
-1238	1285	1652173412975193365	benchmark/Benchmark	8b63429f9342f23f

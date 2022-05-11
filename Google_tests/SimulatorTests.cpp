@@ -41,7 +41,7 @@ TEST_F(SimulatorFixture, SimulatorCanSimulateTransactionWithoutException) {
     ASSERT_NO_THROW(res = StockStrategySimulator::simulateStrategy(strat,
                                                                    "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                                                    1, 100000.));
-    ASSERT_EQ(res.trades->size(), 490);
+    ASSERT_EQ(res.trades->size(), 429);
 }
 
 TEST_F(SimulatorFixture, SimulationByingSotkcsAtOneAndSellingAtTwoReturnsTheDoubleProfit) {
@@ -50,11 +50,11 @@ TEST_F(SimulatorFixture, SimulationByingSotkcsAtOneAndSellingAtTwoReturnsTheDoub
                                                         "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                                         1, 100000.);
 
-    ASSERT_EQ(res.profit, 489);
-    ASSERT_EQ(res.trades->size(), 490);
+    ASSERT_EQ(res.profit, 428);
+    ASSERT_EQ(res.trades->size(), 429);
 }
 
-TEST_F(SimulatorFixture, TradesAreBuyAndSellAsExpected) {
+TEST_F(SimulatorFixture, BuyAndSellAsExpected) {
     auto strat = TestStrategy{};
     auto res = StockStrategySimulator::simulateStrategy(strat,
                                                         "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",

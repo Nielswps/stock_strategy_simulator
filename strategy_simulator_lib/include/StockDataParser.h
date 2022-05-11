@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <ctime>
+#include <stack>
 #include "istream"
 #include "HistoricData.h"
+#include "IterableStack.h"
 
 class StockDataParser {
 public:
@@ -18,7 +20,7 @@ public:
         double price;
     };
 
-    std::vector<trade> trades{};
+    IterableStack<trade> trades{};
 private:
     std::string error;
     enum parsable {object, list};

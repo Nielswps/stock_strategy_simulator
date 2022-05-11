@@ -16,7 +16,6 @@ public:
     };
 
     std::vector<candlestick> candlesticks{};
-    int candlestickPeriod;
 };
 
 #endif //STOCK_EXCHANGE_HISTORICDATA_H

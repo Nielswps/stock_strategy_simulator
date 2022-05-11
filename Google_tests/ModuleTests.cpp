@@ -18,8 +18,8 @@ protected:
 TEST_F(ModuleFixture, LargestDataFileCanBeParsedWithoutCrash) {
     auto input = new std::ifstream{"/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/HMB.json",std::ios_base::in};
     try {
-        auto stockData = StockDataParser(*input);
-        ASSERT_EQ(stockData.trades.size(), 4030697);
+        auto stockData = StockDataParser(*input).data;
+        ASSERT_EQ(stockData.candlesticks.size(), 495);
     } catch (std::exception const &err) {
         FAIL() << err.what();
     }
