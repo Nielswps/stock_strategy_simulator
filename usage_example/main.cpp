@@ -1,5 +1,4 @@
 #include <iostream>
-#include <utility>
 #include "../strategy_simulator_lib/include/StockStrategySimulator.h"
 #include "../strategy_simulator_lib/include/StochasticOscillatorStrategy.h"
 #include <matplotlibcpp.h>
@@ -30,7 +29,7 @@ void plotStochasticOscillatorForPAALB(int X, int Y) {
         PlottingStochasticOscillatorStrategy(std::string destinationForPlotImage, int X, int Y) {
             this->periodsForFastIndicator = X;
             this->periodsForSlowIndicator = Y;
-            this->destination = std::move(destinationForPlotImage);
+            this->destination = destinationForPlotImage;
         }
 
         double simulateOnData(const HistoricData *data, double availableCapital,
@@ -145,7 +144,7 @@ void plotStochasticOscillatorForPAALB(int X, int Y) {
                 currentCapital += data->candlesticks.back().closingPrice * ownedStocks;
             }
 
-            // Pad fast and slow indicator value vectors
+            // Pad fast and slow indicator value vectors to ensure correct length
             while (fastIndicatorValues.size() < dates.size()) fastIndicatorValues.insert(fastIndicatorValues.begin(), 0);
             while (slowIndicatorValues.size() < dates.size()) slowIndicatorValues.insert(slowIndicatorValues.begin(), 0);
 

@@ -20,7 +20,7 @@ StockStrategySimulator::simulateStrategy(Strategy &strategy, const std::string &
 
             // Start threads for each file to run the simulation on and execute
             for (const auto &entry: directoryIterator) {
-                if (!fs::is_regular_file(entry.path()) || !(std::ifstream{entry.path()}.good())) continue;
+                if (!fs::is_regular_file(entry.path())) continue;
 
                 auto future = std::async(std::launch::async, [&]() {
                     return getResultForFile(strategy, entry.path(), candleStickPeriodInDays, startingCapital);
@@ -44,6 +44,7 @@ StockStrategySimulator::simulateStrategy(Strategy &strategy, const std::string &
             throw std::invalid_argument("Given path is not a file or directory");
         }
     }
+    return std::vector<SimulationResult>{};
 }
 
 StockStrategySimulator::SimulationResult

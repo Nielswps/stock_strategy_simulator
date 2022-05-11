@@ -36,10 +36,10 @@ TEST_F(ModuleFixture, SimulationOfStochasticOscillatorOnPAALBGivesLoss) {
     ASSERT_LT(res[0].profit, 0);
 }
 
-TEST_F(ModuleFixture, SimulationOfStochasticOscillatorOnPAALBGivesProfit) {
-    auto s = StochasticOscillatorStrategy{4, 3};
+TEST_F(ModuleFixture, SimulationOfStochasticOscillatorOnTRYGGivesProfit) {
+    auto s = StochasticOscillatorStrategy{24, 3};
     auto res = StockStrategySimulator::simulateStrategy(s,
-                                                        "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
+                                                        "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/TRYG.json",
                                                         2, 10000);
 
     ASSERT_GT(res[0].profit, 0);

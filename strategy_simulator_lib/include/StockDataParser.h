@@ -25,7 +25,7 @@ private:
     std::string error;
     enum parsable {object, list};
 
-    bool loadPointersToTrades(std::istream &istream);
+    bool loadTrades(std::istream &istream);
 };
 
 
