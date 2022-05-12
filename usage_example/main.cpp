@@ -14,9 +14,9 @@ void simulateStochasticOscillatorForPAALB() {
     std::cout << "Trades made during simulation:" << std::endl;
     for (const auto &t: res[0].trades) {
         auto time = gmtime(&t.date);
-        std::cout << (t.buy ? "Bought " : "Sold ") << t.amount << " & " << t.price
-                  << " & " << time->tm_year + 1900 << "-" << time->tm_mon << "-" << time->tm_mday << " "
-                  << time->tm_hour << ":" << time->tm_min << ":" << time->tm_sec << "\\\\" << std::endl;
+        std::cout << (t.buy ? "Bought " : "Sold ") << t.amount << " shares at " << t.price
+                  << " each at " << time->tm_year + 1900 << "-" << time->tm_mon << "-" << time->tm_mday << " "
+                  << time->tm_hour << ":" << time->tm_min << ":" << time->tm_sec << std::endl;
     }
 
     std::cout << (res[0].profit < 0 ? "Loss from strategy:" : "Profit from strategy: ") << std::abs(res[0].profit)
