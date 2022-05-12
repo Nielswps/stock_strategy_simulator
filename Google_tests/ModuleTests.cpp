@@ -45,10 +45,10 @@ TEST_F(ModuleFixture, SimulationOfStochasticOscillatorOnTRYGGivesProfit) {
     ASSERT_GT(res[0].profit, 0);
 }
 
-TEST_F(ModuleFixture, SimulateStrategyOnDirectory) {
+TEST_F(ModuleFixture, SimulateStrategyOnDirectoryGivesFiveResults) {
     auto s = StochasticOscillatorStrategy{14, 3};
     auto path = "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/";
     auto res = StockStrategySimulator::simulateStrategy(s, path, 1, 10000);
 
-    ASSERT_FALSE(res.empty());
+    ASSERT_EQ(res.size(), 5);
 }

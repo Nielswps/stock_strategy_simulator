@@ -17,15 +17,19 @@ StockStrategySimulator::simulateStrategy(Strategy &strategy, const std::string &
             auto directoryIterator = fs::directory_iterator(path,
                                                             fs::directory_options::skip_permission_denied);
             std::vector<std::future<SimulationResult>> results;
+            std::vector<std::string*> filePaths{};
 
             // Start threads for each file to run the simulation on and execute
             for (const auto &entry: directoryIterator) {
                 if (!fs::is_regular_file(entry.path())) continue;
 
+                // Allocate memory for path and create pointer
+                auto *p = new std::string{entry.path()};
                 auto future = std::async(std::launch::async, [&]() {
-                    return getResultForFile(strategy, entry.path(), candleStickPeriodInDays, startingCapital);
+                    return getResultForFile(strategy, *p, candleStickPeriodInDays, startingCapital);
                 });
                 results.push_back(std::move(future));
+                filePaths.push_back(p);
             }
 
             // Get results
@@ -33,6 +37,11 @@ StockStrategySimulator::simulateStrategy(Strategy &strategy, const std::string &
             for (std::future<SimulationResult> &f: results) {
                 if (f.valid())
                     simulationResults.push_back(std::move(f.get()));
+            }
+
+            // Clean up pointers to files
+            for (const auto& fp : filePaths) {
+                delete fp;
             }
 
             return simulationResults;
@@ -52,8 +61,12 @@ StockStrategySimulator::getResultForFile(Strategy &strategy, const std::string &
                                          const int &candleStickPeriodInDays,
                                          const double &startingCapital) {
     std::shared_ptr<std::vector<Trade>> trades = std::make_shared<std::vector<Trade>>();
+
     auto input = new std::ifstream{path, std::ios_base::in};
     auto stockData = StockDataParser(*input, candleStickPeriodInDays).data;
+
+    // Clean up input file stream
+    delete input;
 
     // Define method for making a trade
     auto makeTrade = [trades](Trade t) {
