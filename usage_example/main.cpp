@@ -8,15 +8,15 @@ namespace plt = matplotlibcpp;
 void simulateStochasticOscillatorForPAALB() {
     auto s = StochasticOscillatorStrategy{4, 3};
     auto res = StockStrategySimulator::simulateStrategy(s,
-                                                        "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/HMB.json",
+                                                        "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                                         2, 10000);
 
     std::cout << "Trades made during simulation:" << std::endl;
     for (const auto &t: res[0].trades) {
         auto time = gmtime(&t.date);
-        std::cout << (t.buy ? "Bought " : "Sold ") << t.amount << " shares at " << t.price
-                  << " each at " << time->tm_year + 1900 << "-" << time->tm_mon << "-" << time->tm_mday << " "
-                  << time->tm_hour << ":" << time->tm_min << ":" << time->tm_sec << std::endl;
+        std::cout << (t.buy ? "Bought " : "Sold ") << t.amount << " & " << t.price
+                  << " & " << time->tm_year + 1900 << "-" << time->tm_mon << "-" << time->tm_mday << " "
+                  << time->tm_hour << ":" << time->tm_min << ":" << time->tm_sec << "\\\\" << std::endl;
     }
 
     std::cout << (res[0].profit < 0 ? "Loss from strategy:" : "Profit from strategy: ") << std::abs(res[0].profit)
@@ -26,10 +26,9 @@ void simulateStochasticOscillatorForPAALB() {
 void plotStochasticOscillatorForPAALB(int X, int Y) {
     class PlottingStochasticOscillatorStrategy : public Strategy {
     public:
-        PlottingStochasticOscillatorStrategy(std::string destinationForPlotImage, int X, int Y) {
+        PlottingStochasticOscillatorStrategy(int X, int Y) {
             this->periodsForFastIndicator = X;
             this->periodsForSlowIndicator = Y;
-            this->destination = destinationForPlotImage;
         }
 
         double simulateOnData(const HistoricData *data, double availableCapital,
@@ -49,11 +48,11 @@ void plotStochasticOscillatorForPAALB(int X, int Y) {
                       [](HistoricData::candlestick c) { return c.openingPrice; });
 
             std::vector<double> closing(data->candlesticks.size());
-            std::transform(data->candlesticks.begin(), data->candlesticks.end(), opening.begin(),
+            std::transform(data->candlesticks.begin(), data->candlesticks.end(), closing.begin(),
                       [](HistoricData::candlestick c) { return c.closingPrice; });
 
             std::vector<double> lows(data->candlesticks.size());
-            std::transform(data->candlesticks.begin(), data->candlesticks.end(), opening.begin(),
+            std::transform(data->candlesticks.begin(), data->candlesticks.end(), lows.begin(),
                       [](HistoricData::candlestick c) { return c.lowestPrice; });
 
             std::vector<double> fastIndicatorValues{};
@@ -97,7 +96,7 @@ void plotStochasticOscillatorForPAALB(int X, int Y) {
                 fastIndicatorValues.push_back(fastStochasticIndicator);
 
                 // Update values used for slow stochastic indicator
-                if (fastStochasticIndicatorHistory.size() > periodsForSlowIndicator) {
+                if (fastStochasticIndicatorHistory.size() >= periodsForSlowIndicator) {
                     fastStochasticIndicatorHistory.pop();
                 }
                 fastStochasticIndicatorHistory.push(fastStochasticIndicator);
@@ -148,13 +147,21 @@ void plotStochasticOscillatorForPAALB(int X, int Y) {
             while (fastIndicatorValues.size() < dates.size()) fastIndicatorValues.insert(fastIndicatorValues.begin(), 0);
             while (slowIndicatorValues.size() < dates.size()) slowIndicatorValues.insert(slowIndicatorValues.begin(), 0);
 
-            plt::plot(dates, highs, "palegreen");
-            plt::plot(dates, opening, "yellowgreen");
-            plt::plot(dates, closing, "khaki");
-            plt::plot(dates, lows, "choral");
-            plt::plot(dates, fastIndicatorValues, "royalblue");
-            plt::plot(dates, slowIndicatorValues, "crimson");
-            plt::save(this->destination);
+            plt::plot(dates, highs, {{"label", "High"}});
+            plt::plot(dates, opening, {{"label", "Opening"}});
+            plt::plot(dates, closing, {{"label", "Closing"}});
+            plt::plot(dates, lows, {{"label", "Low"}});
+            plt::legend();
+            plt::ylabel("Price");
+            plt::xlabel("Time");
+            plt::show();
+
+            plt::plot(dates, fastIndicatorValues, {{"label", "Fast Indicator"}});
+            plt::plot(dates, slowIndicatorValues, {{"label", "Slow Indicator"}});
+            plt::legend();
+            plt::ylabel("Indicator value");
+            plt::xlabel("Time");
+            plt::show();
 
             return currentCapital;
         }
@@ -164,26 +171,15 @@ void plotStochasticOscillatorForPAALB(int X, int Y) {
         int periodsForSlowIndicator;
         std::string destination;
     };
-    auto dest = "plotMyMan.png";
-    auto s = PlottingStochasticOscillatorStrategy(dest, 4, 3);
+
+    auto s = PlottingStochasticOscillatorStrategy(4, 3);
     auto res = StockStrategySimulator::simulateStrategy(s,
                                                         "/home/niels/Documents/gitHub/stock_exchange/Google_tests/test_data/PAALB.json",
                                                         2, 10000);
-
-    std::cout << "Trades made during simulation:" << std::endl;
-    for (const auto &t: res[0].trades) {
-        auto time = gmtime(&t.date);
-        std::cout << (t.buy ? "Bought " : "Sold ") << t.amount << " shares at " << t.price
-                  << " each at " << time->tm_year + 1900 << "-" << time->tm_mon << "-" << time->tm_mday << " "
-                  << time->tm_hour << ":" << time->tm_min << ":" << time->tm_sec << std::endl;
-    }
-
-    std::cout << (res[0].profit < 0 ? "Loss from strategy:" : "Profit from strategy: ") << std::abs(res[0].profit)
-              << std::endl;
 }
 
 int main() {
-//    simulateStochasticOscillatorForPAALB();
+    simulateStochasticOscillatorForPAALB();
     plotStochasticOscillatorForPAALB(4, 3);
     return 0;
 }
