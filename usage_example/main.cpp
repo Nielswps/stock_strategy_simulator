@@ -155,6 +155,7 @@ void plotStochasticOscillatorForPAALB(int X, int Y) {
             plt::ylabel("Price");
             plt::xlabel("Time");
             plt::show();
+            plt::close();
 
             plt::plot(dates, fastIndicatorValues, {{"label", "Fast Indicator"}});
             plt::plot(dates, slowIndicatorValues, {{"label", "Slow Indicator"}});
