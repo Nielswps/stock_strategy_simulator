@@ -49,7 +49,7 @@ double StochasticOscillatorStrategy::simulateOnData(const HistoricData *data, do
                 (data->candlesticks[i].closingPrice - lowestPriceAcrossPeriods) / (highLowDiff == 0 ? 1 : highLowDiff);
 
         // Update values used for slow stochastic indicator
-        if (fastStochasticIndicatorHistory.size() > periodsForSlowIndicator) {
+        if (fastStochasticIndicatorHistory.size() >= periodsForSlowIndicator) {
             fastStochasticIndicatorHistory.pop();
         }
         fastStochasticIndicatorHistory.push(fastStochasticIndicator);
