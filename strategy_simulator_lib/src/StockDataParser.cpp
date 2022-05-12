@@ -98,8 +98,6 @@ bool StockDataParser::loadTrades(std::istream &istream) {
                     // We have finished parsing key
                     key = loadedChars;
                     loadedChars.clear();
-                } else if (parsedObjectStack.top() != object) {
-                    // String value parsed outside of object
                 }
 
                 isParsingString = false;
